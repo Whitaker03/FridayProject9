@@ -1,15 +1,23 @@
+import os
 import tkinter as tk
 from tkinter import scrolledtext
 import openai
 from dotenv import load_dotenv
-import os
+
+# Suppress tkinter deprecation warnings
+os.environ["TK_SILENCE_DEPRECATION"] = "1"
+
+# Load environment variables
+def configure():
+    load_dotenv()
+
+configure()
 
 # Load the API key from .env file
-load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 def get_completion():
-    """Fetch completion based on user prompt."""
+    """Fetch completion based on user input."""
     prompt = prompt_input.get("1.0", tk.END).strip()
     if not prompt:
         output_box.delete("1.0", tk.END)
@@ -29,22 +37,43 @@ def get_completion():
         output_box.delete("1.0", tk.END)
         output_box.insert(tk.END, f"Error: {e}")
 
+def clear_text():
+    """Clear the input and output text boxes."""
+    prompt_input.delete("1.0", tk.END)
+    output_box.delete("1.0", tk.END)
+
 # Create GUI window
 root = tk.Tk()
 root.title("OpenAI Prompt Completion")
+root.geometry("600x500")  # Adjusted size for better spacing
+root.resizable(False, False)
 
-# Prompt input box
-tk.Label(root, text="Enter your prompt:").pack(pady=5)
-prompt_input = tk.Text(root, height=5, width=50)
+# Styling
+font_label = ("Helvetica", 12)
+font_text = ("Helvetica", 10)
+
+# Prompt label and input box
+prompt_label = tk.Label(root, text="Enter your prompt:", font=font_label)
+prompt_label.pack(pady=(10, 5))
+
+prompt_input = tk.Text(root, height=5, width=70, font=font_text, wrap=tk.WORD, bd=2, relief="solid")
 prompt_input.pack(pady=5)
 
-# Submit button
-submit_button = tk.Button(root, text="Submit", command=get_completion)
-submit_button.pack(pady=10)
+# Buttons frame
+button_frame = tk.Frame(root)
+button_frame.pack(pady=10)
 
-# Output display box
-tk.Label(root, text="Completion Output:").pack(pady=5)
-output_box = scrolledtext.ScrolledText(root, height=10, width=50, wrap=tk.WORD)
+submit_button = tk.Button(button_frame, text="Submit", command=get_completion, font=font_label, bg="lightblue", width=10)
+submit_button.grid(row=0, column=0, padx=10)
+
+clear_button = tk.Button(button_frame, text="Clear", command=clear_text, font=font_label, bg="lightgray", width=10)
+clear_button.grid(row=0, column=1, padx=10)
+
+# Output label and display box
+output_label = tk.Label(root, text="Completion Output:", font=font_label)
+output_label.pack(pady=(10, 5))
+
+output_box = scrolledtext.ScrolledText(root, height=15, width=70, wrap=tk.WORD, font=font_text, bd=2, relief="solid")
 output_box.pack(pady=5)
 
 # Run the application
