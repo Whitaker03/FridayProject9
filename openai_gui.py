@@ -1,6 +1,7 @@
 import os
 import tkinter as tk
 from tkinter import scrolledtext
+from tkinter import ttk
 import openai
 from dotenv import load_dotenv
 
